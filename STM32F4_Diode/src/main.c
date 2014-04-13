@@ -24,6 +24,21 @@
 #include "uart.h"
 
 extern void Reset_Handler();
+// Begin address for the initialisation values of the .data section.
+// defined in linker script
+extern unsigned int _sidata;
+// Begin address for the .data section; defined in linker script
+extern unsigned int __data_start__;
+// End address for the .data section; defined in linker script
+extern unsigned int __data_end__;
+// Begin address for the .bss section; defined in linker script
+extern unsigned int __bss_start__;
+// End address for the .bss section; defined in linker script
+extern unsigned int __bss_end__;
+extern unsigned int _estack;
+extern unsigned int __end__;
+extern void (*__preinit_array_start[])(void) __attribute__((weak));
+
 
 #define SYSTICK_FREQ 1000 ///< Frequency of the SysTick.
 
@@ -47,7 +62,21 @@ int main(void) {
 //	char c;
 
 	printf("Starting program\r\n");
-	printf("Value: %08x\r\n", (unsigned int)Reset_Handler);
+	printf("Reset Handler at address: 0x%08x\r\n", (unsigned int)Reset_Handler);
+	printf("Preinit array start at address: 0x%08x\r\n", (unsigned int)__preinit_array_start);
+
+//	printf("Stack end at address: 0x%08x\r\n", _estack);
+//	printf("Data initialization values starts at: 0x%08x\r\n", _sidata);
+//	printf("Data starts at: 0x%08x\r\n", __data_start__);
+//	printf("Data ends at: 0x%08x\r\n", __data_end__);
+//	printf("BSS starts at: 0x%08x\r\n", __bss_start__);
+//	printf("BSS ends at: 0x%08x\r\n", __bss_end__);
+	printf("Testowy string!!!!!!!!!!!!!!!!!!!!!!!\r\n");
+	printf("Testowy string!!!!!!!!!!!!!!!!!!!!!!!\r\n");
+	printf("Testowy string!!!!!!!!!!!!!!!!!!!!!!!\r\n");
+	printf("Testowy string!!!!!!!!!!!!!!!!!!!!!!!\r\n");
+	printf("Testowy string!!!!!!!!!!!!!!!!!!!!!!!\r\n");
+	printf("Testowy string!!!!!!!!!!!!!!!!!!!!!!!\r\n");
 
 	while (1) {
 

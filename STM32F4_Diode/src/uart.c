@@ -18,7 +18,7 @@
 #include "uart.h"
 #include "fifo.h"
 
-#define UART2_BUF_LEN 256 ///< UART buffer lengths
+#define UART2_BUF_LEN 512 ///< UART buffer lengths
 
 static char rxBuffer[UART2_BUF_LEN]; ///< Buffer for received data.
 static char txBuffer[UART2_BUF_LEN]; ///< Buffer for transmitted data.
