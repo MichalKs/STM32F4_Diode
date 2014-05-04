@@ -20,8 +20,8 @@
 
 #include <stm32f4xx.h>
 
-void UART2_Init();
-void USART2_Putc(char c);
-char USART2_Getc();
+void UART2_Init(void);
+void USART2_Putc(uint8_t c);
+uint8_t USART2_Getc(void);
 
 #endif /* UART_H_ */

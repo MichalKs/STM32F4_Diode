@@ -49,17 +49,15 @@ extern void (*__preinit_array_start[])(void) __attribute__((weak));
 int main(void) {
 
 	UART2_Init(); // Initialize USART2 (for printf)
-	TimerInit(SYSTICK_FREQ); // Initialize timer
+	TIMER_Init(SYSTICK_FREQ); // Initialize timer
 
 	LED_TypeDef led;
-	led.nr=LED0;
-	led.gpio=GPIOD;
-	led.pin=12;
-	led.clk=RCC_AHB1Periph_GPIOD;
+	led.nr = LED0;
+	led.gpio = GPIOD;
+	led.pin = 12;
+	led.clk = RCC_AHB1Periph_GPIOD;
 
 	LED_Add(&led); // Add an LED
-
-//	char c;
 
 	printf("Starting program\r\n");
 	printf("Reset Handler at address: 0x%08x\r\n", (unsigned int)Reset_Handler);
@@ -83,11 +81,9 @@ int main(void) {
 		LED_Toggle(LED0); // Toggle LED
 		LED_Toggle(LED1); // Toggle inexistent LED
 
-//		c = USART2_Getc();
-//		USART2_Putc(c);
 		printf("Test string sent from STM32F4!!!\r\n"); // Print test string
 
-		TimerDelay(2000); // Delay
+		TIMER_Delay(2000); // Delay
 
 	}
 

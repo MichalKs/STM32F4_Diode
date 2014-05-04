@@ -1,6 +1,6 @@
 /**
  * @file: 	fifo.h
- * @brief:	   
+ * @brief:	First in first out buffer implementation
  * @date: 	12 kwi 2014
  * @author: Michal Ksiezopolski
  * 
@@ -19,24 +19,23 @@
 #ifndef FIFO_H_
 #define FIFO_H_
 
-#include <inttypes.h>
-#include <stdio.h>
+
 #include <stm32f4xx.h>
 
 /**
- *
+ * FIFO structure typedef.
  */
 typedef struct {
-	uint16_t head;
-	uint16_t tail;
-	char* buf;
-	uint16_t len;
-	uint16_t count;
+	uint16_t head;	///< Head
+	uint16_t tail;	///< Tail
+	uint8_t* buf;	///< Pointer to buffer
+	uint16_t len;	///< Maximum length of FIFO
+	uint16_t count;	///< Current number of data elements
 } FIFO_TypeDef;
 
 void FIFO_Add(FIFO_TypeDef* fifo);
-ErrorStatus FIFO_Push(FIFO_TypeDef* fifo, char* c);
-ErrorStatus FIFO_Pop(FIFO_TypeDef* fifo, char* c);
+ErrorStatus FIFO_Push(FIFO_TypeDef* fifo, uint8_t c);
+ErrorStatus FIFO_Pop(FIFO_TypeDef* fifo, uint8_t* c);
 uint8_t FIFO_IsEmpty(FIFO_TypeDef* fifo);
 
 #endif /* FIFO_H_ */
