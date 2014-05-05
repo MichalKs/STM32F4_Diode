@@ -22,6 +22,7 @@
 #include "timers.h"
 #include "led.h"
 #include "uart.h"
+#include "keys.h"
 
 extern void Reset_Handler();
 // Begin address for the initialisation values of the .data section.
@@ -69,21 +70,18 @@ int main(void) {
 //	printf("Data ends at: 0x%08x\r\n", __data_end__);
 //	printf("BSS starts at: 0x%08x\r\n", __bss_start__);
 //	printf("BSS ends at: 0x%08x\r\n", __bss_end__);
-	printf("Testowy string!!!!!!!!!!!!!!!!!!!!!!!\r\n");
-	printf("Testowy string!!!!!!!!!!!!!!!!!!!!!!!\r\n");
-	printf("Testowy string!!!!!!!!!!!!!!!!!!!!!!!\r\n");
-	printf("Testowy string!!!!!!!!!!!!!!!!!!!!!!!\r\n");
-	printf("Testowy string!!!!!!!!!!!!!!!!!!!!!!!\r\n");
-	printf("Testowy string!!!!!!!!!!!!!!!!!!!!!!!\r\n");
+
+	KEYS_Init();
 
 	while (1) {
 
+		KEYS_Update();
 		LED_Toggle(LED0); // Toggle LED
-		LED_Toggle(LED1); // Toggle inexistent LED
+//		LED_Toggle(LED1); // Toggle inexistent LED
 
-		printf("Test string sent from STM32F4!!!\r\n"); // Print test string
+//		printf("Test string sent from STM32F4!!!\r\n"); // Print test string
 
-		TIMER_Delay(2000); // Delay
+		TIMER_Delay(200); // Delay
 
 	}
 
