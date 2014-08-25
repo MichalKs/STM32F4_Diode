@@ -38,13 +38,10 @@ int main(void) {
 	int8_t timerID = TIMER_AddSoftTimer(1000,softTimerCallback);
 	TIMER_StartSoftTimer(timerID);
 
-	LED_TypeDef led;
-	led.nr    = LED0;
-	led.gpio  = GPIOD;
-	led.pin   = 12;
-	led.clk   = RCC_AHB1Periph_GPIOD;
-
-	LED_Add(&led); // Add an LED
+	LED_Init(LED0); // Add an LED
+	LED_Init(LED1); // Add an LED
+	LED_Init(LED2); // Add an LED
+	LED_Init(LED3); // Add an LED
 
 	printf("Starting program\r\n"); // Print a string to UART2
 
@@ -57,7 +54,40 @@ int main(void) {
  */
 void softTimerCallback(void) {
 
-	LED_Toggle(LED0); // Toggle LED
+  static uint8_t counter;
+
+  switch (counter % 4) {
+
+  case 0:
+    LED_ChangeState(LED0, LED_ON);
+    LED_ChangeState(LED1, LED_OFF);
+    LED_ChangeState(LED2, LED_OFF);
+    LED_ChangeState(LED3, LED_OFF);
+    break;
+
+  case 1:
+    LED_ChangeState(LED0, LED_OFF);
+    LED_ChangeState(LED1, LED_ON);
+    LED_ChangeState(LED2, LED_OFF);
+    LED_ChangeState(LED3, LED_OFF);
+    break;
+
+  case 2:
+    LED_ChangeState(LED0, LED_OFF);
+    LED_ChangeState(LED1, LED_OFF);
+    LED_ChangeState(LED2, LED_ON);
+    LED_ChangeState(LED3, LED_OFF);
+    break;
+
+  case 3:
+    LED_ChangeState(LED0, LED_OFF);
+    LED_ChangeState(LED1, LED_OFF);
+    LED_ChangeState(LED2, LED_OFF);
+    LED_ChangeState(LED3, LED_ON);
+    break;
+  }
+
 
 	printf("Test string sent from STM32F4!!!\r\n"); // Print test string
+	counter++;
 }

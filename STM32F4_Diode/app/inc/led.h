@@ -31,8 +31,6 @@
  * @{
  */
 
-#define LED_MAX 10 ////< Maximum number of LEDs
-
 /**
  * @brief LED enum - for identifying an LED.
  */
@@ -54,22 +52,13 @@ typedef enum {
  * @brief State of an LED.
  */
 typedef enum {
-  LED_OFF,  //!< LED_OFF Turn off LED
-  LED_ON    //!< LED_ON Turn on LED
+  LED_UNUSED, //!< LED_UNUSED
+  LED_OFF,    //!< LED_OFF Turn off LED
+  LED_ON,     //!< LED_ON Turn on LED
 } LED_State_TypeDef;
 
-/**
- * @brief Structure representing an LED.
- */
-typedef struct {
-  LED_Number_TypeDef  nr;   ///< Number of the LED
-  GPIO_TypeDef*       gpio; ///< LED GPIO
-  uint16_t            pin;  ///< Pin number
-  uint32_t            clk;  ///< RCC clock bit (assuming all GPIO clocks are turned on by RCC_AHB1PeriphClockCmd())
-} LED_TypeDef;
 
-
-void LED_Add          (LED_TypeDef* led);
+void LED_Init         (LED_Number_TypeDef led);
 void LED_Toggle       (LED_Number_TypeDef led);
 void LED_ChangeState  (LED_Number_TypeDef led, LED_State_TypeDef state);
 
