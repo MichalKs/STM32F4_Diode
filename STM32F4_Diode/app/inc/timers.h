@@ -1,7 +1,7 @@
 /**
- * @file: 	timers.h
- * @brief:	Timing control functions.
- * @date: 	9 kwi 2014
+ * @file:   timers.h
+ * @brief:  Timing control functions.
+ * @date:   9 kwi 2014
  * @author: Michal Ksiezopolski
  * 
  * Control of the SysTick and software timers
@@ -22,24 +22,20 @@
 #define TIMERS_H_
 
 /**
- * @addtogroup StandardDrivers
- * @{
+ * @defgroup  TIMER TIMER
+ * @brief     Timing control functions
  */
 
 /**
- * @addtogroup Timers
+ * @addtogroup TIMER
  * @{
  */
 
-void TIMER_Init(uint32_t freq);
-void TIMER_Delay(uint32_t ms);
-int8_t TIMER_AddSoftTimer(uint32_t maxVal, void (*fun)(void));
-void TIMER_StartSoftTimer(uint8_t id);
-void TIMER_SoftTimersUpdate();
-
-/**
- * @}
- */
+void    TIMER_Init              (uint32_t freq);
+void    TIMER_Delay             (uint32_t ms);
+int8_t  TIMER_AddSoftTimer      (uint32_t maxVal, void (*fun)(void));
+void    TIMER_StartSoftTimer    (uint8_t id);
+void    TIMER_SoftTimersUpdate  (void);
 
 /**
  * @}
