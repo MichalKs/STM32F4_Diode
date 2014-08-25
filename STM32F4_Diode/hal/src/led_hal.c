@@ -16,6 +16,7 @@
  */
 
 #include "led_hal.h"
+#include <stm32f4xx.h>
 
 static GPIO_TypeDef* ledPort[MAX_LEDS] = {
     GPIOD,

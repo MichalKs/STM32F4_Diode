@@ -18,9 +18,6 @@
 #ifndef LED_H_
 #define LED_H_
 
-#include <stm32f4xx.h>
-
-
 /**
  * @defgroup  LED LED
  * @brief     Light Emitting Diode control functions.
@@ -56,7 +53,6 @@ typedef enum {
   LED_OFF,    //!< LED_OFF Turn off LED
   LED_ON,     //!< LED_ON Turn on LED
 } LED_State_TypeDef;
-
 
 void LED_Init         (LED_Number_TypeDef led);
 void LED_Toggle       (LED_Number_TypeDef led);

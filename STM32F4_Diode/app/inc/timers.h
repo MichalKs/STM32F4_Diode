@@ -21,6 +21,8 @@
 #ifndef TIMERS_H_
 #define TIMERS_H_
 
+#include <inttypes.h>
+
 /**
  * @defgroup  TIMER TIMER
  * @brief     Timing control functions

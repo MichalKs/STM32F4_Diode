@@ -1,5 +1,5 @@
 /**
- * @file: 	led_hal.h
+ * @file: 	systick.h
  * @brief:	   
  * @date: 	25 sie 2014
  * @author: Michal Ksiezopolski
@@ -15,15 +15,12 @@
  * @endverbatim
  */
 
-#ifndef LED_HAL_H_
-#define LED_HAL_H_
+#ifndef SYSTICK_H_
+#define SYSTICK_H_
 
 #include <inttypes.h>
 
-#define MAX_LEDS    5 ///< Maximum number of LEDs
+void SYSTICK_Init(uint32_t freq);
+uint32_t SYSTICK_GetTime(void);
 
-void LED_HAL_Init         (uint8_t led);
-void LED_HAL_Toggle       (uint8_t led);
-void LED_HAL_ChangeState  (uint8_t led, uint8_t state);
-
-#endif /* LED_HAL_H_ */
+#endif /* SYSTICK_H_ */

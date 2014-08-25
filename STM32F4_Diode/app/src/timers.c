@@ -19,11 +19,9 @@
  * @endverbatim
  */
 
-#include <stm32f4xx.h>
-
 #include <timers.h>
 #include <stdio.h>
-
+#include <systick.h>
 
 /**
  * @addtogroup TIMER
@@ -31,9 +29,6 @@
  */
 
 #define MAX_SOFT_TIMERS 10 ///< Maximum number of soft timers.
-
-static volatile uint32_t delayTimer;  ///< Delay timer.
-static volatile uint32_t sysTicks;    ///< System clock.
 
 static uint8_t softTimerCount;
 
@@ -56,12 +51,10 @@ static TIMER_Soft_TypeDef softTimers[MAX_SOFT_TIMERS]; ///< Array of soft timers
  */
 void TIMER_Init(uint32_t freq) {
 
-  RCC_ClocksTypeDef RCC_Clocks;
+  SYSTICK_Init(freq);
 
-  RCC_GetClocksFreq(&RCC_Clocks); // Complete the clocks structure with current clock settings.
-
-  SysTick_Config(RCC_Clocks.HCLK_Frequency / freq); // Set SysTick frequency
 }
+
 /**
  * @brief Delay function.
  * @param ms Milliseconds to delay.
@@ -69,9 +62,18 @@ void TIMER_Init(uint32_t freq) {
  */
 void TIMER_Delay(uint32_t ms) {
 
-  delayTimer = ms;
+  uint32_t startTime = SYSTICK_GetTime();
+  uint32_t currentTime;
 
-  while (delayTimer); // Delay
+  while (1) { // Delay
+    currentTime = SYSTICK_GetTime();
+    if ((currentTime >= startTime) && (currentTime-startTime > ms)) {
+      break;
+    }
+    if ((currentTime < startTime) && (UINT32_MAX-startTime + currentTime > ms)) {
+      break;
+    }
+  }
 
 }
 /**
@@ -134,6 +136,7 @@ void TIMER_SoftTimersUpdate(void) {
 
   static uint32_t prevVal;
   uint32_t delta;
+  uint32_t sysTicks = SYSTICK_GetTime();
 
   if (sysTicks >= prevVal) {
 
@@ -165,18 +168,7 @@ void TIMER_SoftTimersUpdate(void) {
     }
   }
 }
-/**
- * @brief Interrupt handler for SysTick.
- */
-void SysTick_Handler(void) {
 
-  if (delayTimer) {
-    delayTimer--; // Decrement delayTimer
-  }
-
-  sysTicks++; // Update system time
-
-}
 
 /**
  * @}
