@@ -25,7 +25,7 @@
 
 #define UART2_BUF_LEN     2048    ///< UART2 buffer lengths
 #define UART2_TERMINATOR '\n'     ///< UART2 frame terminator character
-#define UART2_BAUDRATE    9600    ///< UART2 baud rate
+//#define UART2_BAUDRATE    9600    ///< UART2 baud rate
 
 static uint8_t gotFrame;  ///< Nonzero signals a new frame (number of received frames)
 
@@ -38,7 +38,7 @@ static FIFO_TypeDef txFifo; ///< TX FIFO
 /**
  * @brief Initialize USART2
  */
-void UART2_Init(void) {
+void UART2_Init(uint32_t baud, char terminator) {
 
   GPIO_InitTypeDef GPIO_InitStructure;
   USART_InitTypeDef USART_InitStructure;
@@ -68,7 +68,7 @@ void UART2_Init(void) {
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);
 
   // USART initialization
-  USART_InitStructure.USART_BaudRate = UART2_BAUDRATE;
+  USART_InitStructure.USART_BaudRate = baud;
   USART_InitStructure.USART_WordLength = USART_WordLength_8b;
   USART_InitStructure.USART_StopBits = USART_StopBits_1;
   USART_InitStructure.USART_Parity = USART_Parity_No;

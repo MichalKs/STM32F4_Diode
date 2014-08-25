@@ -31,7 +31,7 @@ void softTimerCallback(void);
 
 int main(void) {
 	
-	UART2_Init(); // Initialize USART2 (for printf)
+	UART2_Init(9600,'\n'); // Initialize USART2 (for printf)
 	TIMER_Init(SYSTICK_FREQ); // Initialize timer
 
 	// Add a soft timer
