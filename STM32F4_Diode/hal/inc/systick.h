@@ -20,7 +20,7 @@
 
 #include <inttypes.h>
 
-void SYSTICK_Init(uint32_t freq);
-uint32_t SYSTICK_GetTime(void);
+void      SYSTICK_Init    (uint32_t freq);
+uint32_t  SYSTICK_GetTime (void);
 
 #endif /* SYSTICK_H_ */

@@ -18,7 +18,7 @@
 #ifndef UART_H_
 #define UART_H_
 
-#include <stm32f4xx.h>
+#include <inttypes.h>
 
 /**
  * @defgroup  USART2 USART2
@@ -30,10 +30,8 @@
  * @{
  */
 
-void    UART2_Init(uint32_t baud, char terminator);
-void    USART2_Putc(uint8_t c);
-uint8_t USART2_Getc(void);
-uint8_t USART2_GetFrame(uint8_t* buf, uint8_t* len);
+void    UART2_Init(uint32_t baud, void(*rxCb)(uint8_t), uint8_t(*txCb)(uint8_t*));
+void    UART2_TxEnable(void);
 
 /**
  * @}

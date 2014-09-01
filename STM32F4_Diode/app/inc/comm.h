@@ -18,6 +18,11 @@
 #ifndef COMM_H_
 #define COMM_H_
 
+#include <inttypes.h>
 
+void    COMM_Init(uint32_t baud);
+void    COMM_Putc(uint8_t c);
+uint8_t COMM_Getc(void);
+uint8_t COMM_GetFrame(uint8_t* buf, uint8_t* len);
 
 #endif /* COMM_H_ */

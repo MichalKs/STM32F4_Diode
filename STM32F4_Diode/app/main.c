@@ -22,20 +22,20 @@
 
 #include <timers.h>
 #include <led.h>
-#include <uart2.h>
+#include <comm.h>
 #include <utils.h>
 
-#define SYSTICK_FREQ 1000 ///< Frequency of the SysTick.
+#define SYSTICK_FREQ 1000 ///< Frequency of the SysTick set at 1kHz.
 
 void softTimerCallback(void);
 
 int main(void) {
 	
-	UART2_Init(9600,'\n'); // Initialize USART2 (for printf)
+  COMM_Init(9600);
 	TIMER_Init(SYSTICK_FREQ); // Initialize timer
 
 	// Add a soft timer
-	int8_t timerID = TIMER_AddSoftTimer(1000,softTimerCallback);
+	int8_t timerID = TIMER_AddSoftTimer(1000, softTimerCallback);
 	TIMER_StartSoftTimer(timerID);
 
 	LED_Init(LED0); // Add an LED
@@ -43,7 +43,7 @@ int main(void) {
 	LED_Init(LED2); // Add an LED
 	LED_Init(LED3); // Add an LED
 
-	printf("Starting program\r\n"); // Print a string to UART2
+	printf("Starting program\r\n"); // Print a string to terminal
 
 	while (1) {
 		TIMER_SoftTimersUpdate();

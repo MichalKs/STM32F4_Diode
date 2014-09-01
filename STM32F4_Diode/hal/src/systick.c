@@ -30,6 +30,10 @@ void SYSTICK_Init(uint32_t freq) {
 
 }
 
+uint32_t SYSTICK_GetTime(void) {
+  return sysTicks;
+}
+
 /**
  * @brief Interrupt handler for SysTick.
  */
@@ -37,8 +41,4 @@ void SysTick_Handler(void) {
 
   sysTicks++; // Update system time
 
-}
-
-uint32_t SYSTICK_GetTime(void) {
-  return sysTicks;
 }
