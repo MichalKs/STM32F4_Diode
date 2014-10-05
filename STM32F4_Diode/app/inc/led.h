@@ -1,8 +1,16 @@
 /**
  * @file:   led.h
- * @brief:  Light Emitting Diode control functions.
+ * @brief:  Light Emitting Diodes control functions.
  * @date:   9 kwi 2014
  * @author: Michal Ksiezopolski
+ * @details A simple library to add an abstraction
+ * layer to blinking LEDs.
+ * To use the library you need to call LED_Init using
+ * one of the LEDs defined in LED_Number_TypeDef and then
+ * use LED_Toggle or LED_ChangeState with the initialized
+ * LED number.
+ * The various LED ports and pins are defined in
+ * led_hal.c and led_hal.h.
  * 
  * @verbatim
  * Copyright (c) 2014 Michal Ksiezopolski.
@@ -49,9 +57,9 @@ typedef enum {
  * @brief State of an LED.
  */
 typedef enum {
-  LED_UNUSED, //!< LED_UNUSED
-  LED_OFF,    //!< LED_OFF Turn off LED
-  LED_ON,     //!< LED_ON Turn on LED
+  LED_UNUSED, //!< LED_UNUSED LED not initialized
+  LED_OFF,    //!< LED_OFF    Turn off LED
+  LED_ON,     //!< LED_ON     Turn on LED
 } LED_State_TypeDef;
 
 void LED_Init         (LED_Number_TypeDef led);

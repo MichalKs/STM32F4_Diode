@@ -29,12 +29,25 @@
 
 void softTimerCallback(void);
 
+#define DEBUG
+
+#ifdef DEBUG
+#define d_print(str, args...) printf("MAIN--> "str"%s",##args,"\r")
+#define d_println(str, args...) printf("MAIN--> "str"%s",##args,"\r\n")
+#else
+#define d_print(str, args...) (void)0
+#define d_println(str, args...) (void)0
+#endif
+
+
 int main(void) {
 	
   COMM_Init(9600);
+  d_println("Starting program"); // Print a string to terminal
+
 	TIMER_Init(SYSTICK_FREQ); // Initialize timer
 
-	// Add a soft timer
+	// Add a soft timer with callback running every 1000ms
 	int8_t timerID = TIMER_AddSoftTimer(1000, softTimerCallback);
 	TIMER_StartSoftTimer(timerID);
 
@@ -42,8 +55,8 @@ int main(void) {
 	LED_Init(LED1); // Add an LED
 	LED_Init(LED2); // Add an LED
 	LED_Init(LED3); // Add an LED
-
-	printf("Starting program\r\n"); // Print a string to terminal
+	LED_Init(LED5);
+	LED_ChangeState(LED5, LED_ON);
 
 	while (1) {
 		TIMER_SoftTimersUpdate();
@@ -88,6 +101,6 @@ void softTimerCallback(void) {
   }
 
 
-	printf("Test string sent from STM32F4!!!\r\n"); // Print test string
+  d_println("Test string sent from STM32F4!!!"); // Print test string
 	counter++;
 }

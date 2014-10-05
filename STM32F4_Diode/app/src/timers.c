@@ -23,6 +23,19 @@
 #include <stdio.h>
 #include <systick.h>
 
+
+#ifndef DEBUG
+  #define DEBUG
+#endif
+
+#ifdef DEBUG
+  #define print(str, args...) printf("LED--> "str"%s",##args,"\r")
+  #define println(str, args...) printf("LED--> "str"%s",##args,"\r\n")
+#else
+  #define print(str, args...) (void)0
+  #define println(str, args...) (void)0
+#endif
+
 /**
  * @addtogroup TIMER
  * @{
@@ -30,7 +43,7 @@
 
 #define MAX_SOFT_TIMERS 10 ///< Maximum number of soft timers.
 
-static uint8_t softTimerCount;
+static uint8_t softTimerCount; ///< Count number of soft timers
 
 /**
  * @brief Soft timer structure.
@@ -46,7 +59,7 @@ typedef struct {
 static TIMER_Soft_TypeDef softTimers[MAX_SOFT_TIMERS]; ///< Array of soft timers
 
 /**
- * @brief Initiate SysTick with a given frequency.
+ * @brief Initiate the system time interrupt with a given frequency.
  * @param freq Required frequency of the timer in Hz
  */
 void TIMER_Init(uint32_t freq) {
@@ -58,7 +71,7 @@ void TIMER_Init(uint32_t freq) {
 /**
  * @brief Delay function.
  * @param ms Milliseconds to delay.
- * @see delayTimer
+ * @warning This is a blocking function. Use with care!
  */
 void TIMER_Delay(uint32_t ms) {
 
@@ -70,23 +83,24 @@ void TIMER_Delay(uint32_t ms) {
     if ((currentTime >= startTime) && (currentTime-startTime > ms)) {
       break;
     }
+    // account for system timer overflow
     if ((currentTime < startTime) && (UINT32_MAX-startTime + currentTime > ms)) {
       break;
     }
   }
-
 }
+
 /**
  * @brief Adds a soft timer
  * @param maxVal Overflow value of timer
  * @param fun Function called on overflow (should return void and accept no parameters)
- * @return Returns the ID of the new counter or error code
+ * @return Returns the ID of the new counter or error code (-1)
  * @retval -1 Error: too many timers
  */
 int8_t TIMER_AddSoftTimer(uint32_t maxVal, void (*fun)(void)) {
 
   if (softTimerCount > MAX_SOFT_TIMERS) {
-    printf("TIMERS: Reached maximum number of timers!");
+    println("TIMERS: Reached maximum number of timers!");
     return -1;
   }
 
@@ -100,6 +114,7 @@ int8_t TIMER_AddSoftTimer(uint32_t maxVal, void (*fun)(void)) {
 
   return (softTimerCount - 1);
 }
+
 /**
  * @brief Starts the timer (zeroes out current count value).
  * @param id Timer ID
@@ -168,7 +183,6 @@ void TIMER_SoftTimersUpdate(void) {
     }
   }
 }
-
 
 /**
  * @}

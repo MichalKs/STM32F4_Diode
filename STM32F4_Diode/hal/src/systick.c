@@ -1,6 +1,6 @@
 /**
  * @file: 	systick.c
- * @brief:	   
+ * @brief:	Managing the SysTick
  * @date: 	25 sie 2014
  * @author: Michal Ksiezopolski
  * 
@@ -18,8 +18,22 @@
 #include <systick.h>
 #include <stm32f4xx.h>
 
+/**
+ * @defgroup  SYSTICK SYSTICK
+ * @brief     SYSTICK control functions.
+ */
+
+/**
+ * @addtogroup SYSTICK
+ * @{
+ */
+
 static uint32_t sysTicks;  ///< Delay timer.
 
+/**
+ * @brief Initialize the SysTick with a given frequency
+ * @param freq SysTick frequency
+ */
 void SYSTICK_Init(uint32_t freq) {
 
   RCC_ClocksTypeDef RCC_Clocks;
@@ -29,7 +43,10 @@ void SYSTICK_Init(uint32_t freq) {
   SysTick_Config(RCC_Clocks.HCLK_Frequency / freq); // Set SysTick frequency
 
 }
-
+/**
+ * @brief Get the system time
+ * @return System time.
+ */
 uint32_t SYSTICK_GetTime(void) {
   return sysTicks;
 }
@@ -42,3 +59,8 @@ void SysTick_Handler(void) {
   sysTicks++; // Update system time
 
 }
+
+/**
+ * @}
+ */
+
