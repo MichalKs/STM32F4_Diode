@@ -16,14 +16,12 @@
  * @endverbatim
  */
 
-#include <stm32f4xx.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 #include <timers.h>
 #include <led.h>
 #include <comm.h>
-#include <utils.h>
+#include <keys.h>
 
 #define SYSTICK_FREQ 1000 ///< Frequency of the SysTick set at 1kHz.
 
@@ -55,25 +53,31 @@ int main(void) {
 	LED_Init(LED1); // Add an LED
 	LED_Init(LED2); // Add an LED
 	LED_Init(LED3); // Add an LED
-	LED_Init(LED5);
+	LED_Init(LED5); // Add nonexising LED for test
 	LED_ChangeState(LED5, LED_ON);
+
+	KEYS_Init(); // initialize matrix keyboard
 
   uint8_t buf[255];
   uint8_t len;
 
 	while (1) {
 
+	  // check for new frames from PC
 	  if (!COMM_GetFrame(buf, &len)) {
 	    println("Got frame of length %d: %s", (int)len, (char*)buf);
 	  }
 
-		TIMER_SoftTimersUpdate();
+		TIMER_SoftTimersUpdate(); // run timers
+		KEYS_Update(); // run keyboard
 	}
 }
 /**
  * @brief Callback function called on every soft timer overflow
  */
 void softTimerCallback(void) {
+
+
 
   static uint8_t counter;
 

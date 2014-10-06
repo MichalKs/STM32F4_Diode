@@ -1,7 +1,7 @@
 /**
- * @file: 	keys.h
+ * @file: 	keys_hal.h
  * @brief:	   
- * @date: 	5 maj 2014
+ * @date: 	6 paź 2014
  * @author: Michal Ksiezopolski
  * 
  * @verbatim
@@ -15,25 +15,13 @@
  * @endverbatim
  */
 
-#ifndef KEYS_H_
-#define KEYS_H_
+#ifndef KEYS_HAL_H_
+#define KEYS_HAL_H_
 
-typedef enum {
-  KEY0,
-  KEY1,
-  KEY2,
-  KEY3,
-  KEY4,
-  KEY5,
-  KEY6,
-  KEY7,
-  KEY8,
-  KEY9,
-  KEY_HASH,
-  KEY_ASTERISK
-} KEY_Id_Typedef;
+#include <inttypes.h>
 
-void KEYS_Init(void);
-void KEYS_Update(void);
+int8_t KEYS_HAL_ReadRow(void);
+void KEYS_HAL_SelectColumn(uint8_t col);
+void KEYS_HAL_Init(void);
 
-#endif /* KEYS_H_ */
+#endif /* KEYS_HAL_H_ */

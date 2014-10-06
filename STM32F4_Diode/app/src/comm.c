@@ -121,6 +121,7 @@ uint8_t COMM_Getc(void) {
  * @retval 0 Received frame
  * @retval 1 No frame in buffer
  * @retval 2 Frame error
+ * TODO Add maximum length checking so as not to overflow
  */
 uint8_t COMM_GetFrame(uint8_t* buf, uint8_t* len) {
 
