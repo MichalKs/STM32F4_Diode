@@ -33,6 +33,10 @@
 void    UART2_Init(uint32_t baud, void(*rxCb)(uint8_t), uint8_t(*txCb)(uint8_t*));
 void    UART2_TxEnable(void);
 
+// HAL functions for use in higher level
+#define COMM_HAL_Init     UART2_Init
+#define COMM_HAL_TxEnable UART2_TxEnable
+
 /**
  * @}
  */

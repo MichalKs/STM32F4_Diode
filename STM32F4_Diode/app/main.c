@@ -32,18 +32,18 @@ void softTimerCallback(void);
 #define DEBUG
 
 #ifdef DEBUG
-#define d_print(str, args...) printf("MAIN--> "str"%s",##args,"\r")
-#define d_println(str, args...) printf("MAIN--> "str"%s",##args,"\r\n")
+#define print(str, args...) printf("MAIN--> "str"%s",##args,"\r")
+#define println(str, args...) printf("MAIN--> "str"%s",##args,"\r\n")
 #else
-#define d_print(str, args...) (void)0
-#define d_println(str, args...) (void)0
+#define print(str, args...) (void)0
+#define println(str, args...) (void)0
 #endif
 
 
 int main(void) {
 	
   COMM_Init(9600);
-  d_println("Starting program"); // Print a string to terminal
+  println("Starting program"); // Print a string to terminal
 
 	TIMER_Init(SYSTICK_FREQ); // Initialize timer
 
@@ -58,7 +58,15 @@ int main(void) {
 	LED_Init(LED5);
 	LED_ChangeState(LED5, LED_ON);
 
+  uint8_t buf[255];
+  uint8_t len;
+
 	while (1) {
+
+	  if (!COMM_GetFrame(buf, &len)) {
+	    println("Got frame of length %d: %s", (int)len, (char*)buf);
+	  }
+
 		TIMER_SoftTimersUpdate();
 	}
 }
@@ -100,7 +108,6 @@ void softTimerCallback(void) {
     break;
   }
 
-
-  d_println("Test string sent from STM32F4!!!"); // Print test string
+//  println("Test string sent from STM32F4!!!"); // Print test string
 	counter++;
 }

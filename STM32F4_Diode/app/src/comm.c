@@ -1,6 +1,6 @@
 /**
  * @file: 	comm.c
- * @brief:	   
+ * @brief:	Communication with PC functions.
  * @date: 	25 sie 2014
  * @author: Michal Ksiezopolski
  * 
@@ -19,9 +19,32 @@
 #include <fifo.h>
 // HAL
 #include <uart2.h>
+#include <stdio.h>
+
+#ifndef DEBUG
+  #define DEBUG
+#endif
+
+#ifdef DEBUG
+  #define print(str, args...) printf("COMM--> "str"%s",##args,"\r")
+  #define println(str, args...) printf("COMM--> "str"%s",##args,"\r\n")
+#else
+  #define print(str, args...) (void)0
+  #define println(str, args...) (void)0
+#endif
+
+/**
+ * @defgroup  COMM COMM
+ * @brief     Communication with PC functions.
+ */
+
+/**
+ * @addtogroup COMM
+ * @{
+ */
 
 #define COMM_BUF_LEN     2048    ///< COMM buffer lengths
-#define COMM_TERMINATOR '\n'     ///< COMM frame terminator character
+#define COMM_TERMINATOR '\r'     ///< COMM frame terminator character
 
 static uint8_t rxBuffer[COMM_BUF_LEN]; ///< Buffer for received data.
 static uint8_t txBuffer[COMM_BUF_LEN]; ///< Buffer for transmitted data.
@@ -30,9 +53,6 @@ static FIFO_TypeDef rxFifo; ///< RX FIFO
 static FIFO_TypeDef txFifo; ///< TX FIFO
 
 static uint8_t gotFrame;  ///< Nonzero signals a new frame (number of received frames)
-
-#define COMM_HAL_Init     UART2_Init
-#define COMM_HAL_TxEnable UART2_TxEnable
 
 uint8_t COMM_TxCallback(uint8_t* c);
 void    COMM_RxCallback(uint8_t c);
@@ -44,6 +64,9 @@ void    COMM_RxCallback(uint8_t c);
  */
 void COMM_Init(uint32_t baud) {
 
+  // pass baud rate
+  // callback for received data and callback for
+  // transmitted data
   COMM_HAL_Init(baud, COMM_RxCallback, COMM_TxCallback);
 
   // Initialize RX FIFO
@@ -60,18 +83,21 @@ void COMM_Init(uint32_t baud) {
 
 /**
  * @brief Send a char to USART2.
+ * @details This function can be called in stubs.c _write
+ * function in order for printf to work
+ *
  * @param c Char to send.
  */
 void COMM_Putc(uint8_t c) {
 
   FIFO_Push(&txFifo,c); // Put data in TX buffer
-  COMM_HAL_TxEnable(); // Enable low level transmitter
+  COMM_HAL_TxEnable();  // Enable low level transmitter
 
 }
 /**
  * @brief Get a char from USART2
  * @return Received char.
- * @warning Blocking function!
+ * @warning Blocking function! Waits until char is received.
  */
 uint8_t COMM_Getc(void) {
 
@@ -94,24 +120,24 @@ uint8_t COMM_Getc(void) {
  * @param len Length not including terminator character
  * @retval 0 Received frame
  * @retval 1 No frame in buffer
- * @retval 2
+ * @retval 2 Frame error
  */
-uint8_t USART2_GetFrame(uint8_t* buf, uint8_t* len) {
+uint8_t COMM_GetFrame(uint8_t* buf, uint8_t* len) {
 
   uint8_t c;
   *len = 0; // zero out length variable
 
   if (gotFrame) {
-
     while (1) {
 
       // no more data and terminator wasn't reached => error
       if (FIFO_IsEmpty(&rxFifo)) {
         *len = 0;
+        println("Invalid frame");
         return 2;
       }
-
-      buf[(*len)++] =  FIFO_Pop(&rxFifo, &c);
+      FIFO_Pop(&rxFifo, &c);
+      buf[(*len)++] = c;
 
       // if end of frame
       if (c == COMM_TERMINATOR) {
@@ -130,8 +156,12 @@ uint8_t USART2_GetFrame(uint8_t* buf, uint8_t* len) {
   }
 
 }
-
+/**
+ * @brief Callback for receiving data from PC.
+ * @param c Data sent from lower layer software.
+ */
 void COMM_RxCallback(uint8_t c) {
+
   uint8_t res = FIFO_Push(&rxFifo, c); // Put data in RX buffer
 
   // Checking res to ensure no buffer overflow occurred
@@ -139,7 +169,12 @@ void COMM_RxCallback(uint8_t c) {
     gotFrame++;
   }
 }
-
+/**
+ * @brief Callback for transmitting data to lower layer
+ * @param c Transmitted data
+ * @retval 0 There is no more data in buffer (stop transmitting)
+ * @retval 1 Valid data in c
+ */
 uint8_t COMM_TxCallback(uint8_t* c) {
 
   if (FIFO_Pop(&txFifo, c) == 0) { // If buffer not empty
@@ -150,5 +185,6 @@ uint8_t COMM_TxCallback(uint8_t* c) {
 
 }
 
-
-
+/**
+ * @}
+ */

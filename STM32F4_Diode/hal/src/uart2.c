@@ -34,13 +34,14 @@ uint8_t (*txCallback)(uint8_t*);  ///< Callback function for transmitting data
  */
 void UART2_Init(uint32_t baud, void(*rxCb)(uint8_t), uint8_t(*txCb)(uint8_t*) ) {
 
+  // assign the callbacks
   rxCallback = rxCb;
   txCallback = txCb;
 
   GPIO_InitTypeDef  GPIO_InitStructure;
   USART_InitTypeDef USART_InitStructure;
 
-  // Enable clocks
+  // Enable clocks for peripherals
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA,  ENABLE);
 
@@ -64,7 +65,7 @@ void UART2_Init(uint32_t baud, void(*rxCb)(uint8_t), uint8_t(*txCb)(uint8_t*) ) 
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);
 
-  // USART initialization
+  // USART initialization (standard 8n1)
   USART_InitStructure.USART_BaudRate            = baud;
   USART_InitStructure.USART_WordLength          = USART_WordLength_8b;
   USART_InitStructure.USART_StopBits            = USART_StopBits_1;
@@ -76,16 +77,21 @@ void UART2_Init(uint32_t baud, void(*rxCb)(uint8_t), uint8_t(*txCb)(uint8_t*) ) 
   // Enable USART2
   USART_Cmd(USART2, ENABLE);
 
-    // Enable RXNE interrupt
+  // Enable RXNE interrupt
   USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
-  // Disable TXE interrupt
+  // Disable TXE interrupt - we enable it only when there is
+  // data to send
   USART_ITConfig(USART2, USART_IT_TXE, DISABLE);
 
   // Enable USART2 global interrupt
   NVIC_EnableIRQ(USART2_IRQn);
 
 }
-
+/**
+ * @brief Enable transmitter.
+ * @details This function has to be called by the higher layer
+ * in order to start the transmitter.
+ */
 void UART2_TxEnable(void) {
   USART_ITConfig(USART2, USART_IT_TXE, ENABLE);
 }
@@ -99,10 +105,14 @@ void USART2_IRQHandler(void) {
   if(USART_GetITStatus(USART2, USART_IT_TXE) != RESET) {
 
     uint8_t c;
-    if (txCallback(&c)) {
-      USART_SendData(USART2, c); // Send data
-    } else {
-      USART_ITConfig(USART2, USART_IT_TXE, DISABLE);
+
+    if (txCallback) { // if not NULL
+      // get data from higher layer using callback
+      if (txCallback(&c)) {
+        USART_SendData(USART2, c); // Send data
+      } else { // if no more data to send disable the transmitter
+        USART_ITConfig(USART2, USART_IT_TXE, DISABLE);
+      }
     }
   }
 
@@ -111,8 +121,8 @@ void USART2_IRQHandler(void) {
 
     uint8_t c = USART_ReceiveData(USART2); // Get data from UART
 
-    if (rxCallback) {
-      rxCallback(c);
+    if (rxCallback) { // if not NULL
+      rxCallback(c); // send received data to higher layer
     }
   }
 }
