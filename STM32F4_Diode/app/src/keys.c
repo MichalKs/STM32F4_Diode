@@ -62,7 +62,7 @@ void KEYS_Init(void) {
 /**
  * @brief Checks if any keys are set.
  * @details Run this function in main loop to check for pressed keys.
- * TODO Add debounce, repeat, function calling
+ * TODO Add repeat, function calling
  */
 uint8_t KEYS_Update(void) {
 
