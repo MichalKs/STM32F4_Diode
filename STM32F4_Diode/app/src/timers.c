@@ -67,6 +67,13 @@ void TIMER_Init(uint32_t freq) {
   SYSTICK_Init(freq);
 
 }
+/**
+ * @brief Returns the system time.
+ * @return System time
+ */
+uint32_t TIMER_GetTime(void) {
+  return SYSTICK_GetTime();
+}
 
 /**
  * @brief Delay function.
@@ -75,11 +82,11 @@ void TIMER_Init(uint32_t freq) {
  */
 void TIMER_Delay(uint32_t ms) {
 
-  uint32_t startTime = SYSTICK_GetTime();
+  uint32_t startTime = TIMER_GetTime();
   uint32_t currentTime;
 
   while (1) { // Delay
-    currentTime = SYSTICK_GetTime();
+    currentTime = TIMER_GetTime();
     if ((currentTime >= startTime) && (currentTime-startTime > ms)) {
       break;
     }
@@ -88,6 +95,29 @@ void TIMER_Delay(uint32_t ms) {
       break;
     }
   }
+}
+/**
+ * @brief Nonblocking delay function using
+ * @param ms Delay time
+ * @param startTime System time at start of delay (this has to be written before delay using TIMER_GetTime())
+ * @retval 0 Delay value has not been reached (wait longer)
+ * @retval 1 Delay value has been reached
+ */
+uint8_t TIMER_DelayTimer(uint32_t ms, uint32_t startTime) {
+
+  uint32_t currentTime = TIMER_GetTime();
+
+  if ((currentTime >= startTime) && (currentTime-startTime > ms)) {
+
+    return 1;
+
+  // account for system timer overflow
+  } else if ((currentTime < startTime) && (UINT32_MAX-startTime + currentTime > ms)) {
+    return 1;
+  } else {
+    return 0;
+  }
+
 }
 
 /**

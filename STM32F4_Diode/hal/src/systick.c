@@ -28,7 +28,7 @@
  * @{
  */
 
-static uint32_t sysTicks;  ///< Delay timer.
+static volatile uint32_t sysTicks;  ///< Delay timer.
 
 /**
  * @brief Initialize the SysTick with a given frequency

@@ -17,6 +17,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 
 #include <timers.h>
 #include <led.h>
@@ -24,6 +25,7 @@
 #include <keys.h>
 
 #define SYSTICK_FREQ 1000 ///< Frequency of the SysTick set at 1kHz.
+#define COMM_BAUD_RATE 115200UL ///< Baud rate for communication with PC
 
 void softTimerCallback(void);
 
@@ -40,7 +42,7 @@ void softTimerCallback(void);
 
 int main(void) {
 	
-  COMM_Init(9600);
+  COMM_Init(COMM_BAUD_RATE);
   println("Starting program"); // Print a string to terminal
 
 	TIMER_Init(SYSTICK_FREQ); // Initialize timer
@@ -61,11 +63,26 @@ int main(void) {
   uint8_t buf[255];
   uint8_t len;
 
+  uint32_t softTimer = TIMER_GetTime(); // get start time for delay
+
 	while (1) {
+
+	  if (TIMER_DelayTimer(1000, softTimer)) {
+	    LED_Toggle(LED3);
+	    softTimer = TIMER_GetTime(); // get start time for delay
+	  }
 
 	  // check for new frames from PC
 	  if (!COMM_GetFrame(buf, &len)) {
 	    println("Got frame of length %d: %s", (int)len, (char*)buf);
+
+	    // control LED0 from terminal
+	    if (!strcmp((char*)buf, ":LED0 ON")) {
+	      LED_ChangeState(LED0, LED_ON);
+	    }
+	    if (!strcmp((char*)buf, ":LED0 OFF")) {
+	      LED_ChangeState(LED0, LED_OFF);
+	    }
 	  }
 
 		TIMER_SoftTimersUpdate(); // run timers
@@ -77,41 +94,27 @@ int main(void) {
  */
 void softTimerCallback(void) {
 
-
-
-  static uint8_t counter;
-
-  switch (counter % 4) {
-
-  case 0:
-    LED_ChangeState(LED0, LED_ON);
-    LED_ChangeState(LED1, LED_OFF);
-    LED_ChangeState(LED2, LED_OFF);
-    LED_ChangeState(LED3, LED_OFF);
-    break;
-
-  case 1:
-    LED_ChangeState(LED0, LED_OFF);
-    LED_ChangeState(LED1, LED_ON);
-    LED_ChangeState(LED2, LED_OFF);
-    LED_ChangeState(LED3, LED_OFF);
-    break;
-
-  case 2:
-    LED_ChangeState(LED0, LED_OFF);
-    LED_ChangeState(LED1, LED_OFF);
-    LED_ChangeState(LED2, LED_ON);
-    LED_ChangeState(LED3, LED_OFF);
-    break;
-
-  case 3:
-    LED_ChangeState(LED0, LED_OFF);
-    LED_ChangeState(LED1, LED_OFF);
-    LED_ChangeState(LED2, LED_OFF);
-    LED_ChangeState(LED3, LED_ON);
-    break;
-  }
-
-//  println("Test string sent from STM32F4!!!"); // Print test string
-	counter++;
+//  static uint8_t counter;
+//
+//  switch (counter % 3) {
+//
+//  case 0:
+//    LED_ChangeState(LED1, LED_OFF);
+//    LED_ChangeState(LED2, LED_OFF);
+//    break;
+//
+//  case 1:
+//    LED_ChangeState(LED1, LED_ON);
+//    LED_ChangeState(LED2, LED_OFF);
+//    break;
+//
+//  case 2:
+//    LED_ChangeState(LED1, LED_OFF);
+//    LED_ChangeState(LED2, LED_ON);
+//    break;
+//
+//  }
+//
+////  println("Test string sent from STM32F4!!!"); // Print test string
+//	counter++;
 }
