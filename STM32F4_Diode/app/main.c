@@ -97,27 +97,27 @@ int main(void) {
  */
 void softTimerCallback(void) {
 
-//  static uint8_t counter;
-//
-//  switch (counter % 3) {
-//
-//  case 0:
-//    LED_ChangeState(LED1, LED_OFF);
-//    LED_ChangeState(LED2, LED_OFF);
-//    break;
-//
-//  case 1:
-//    LED_ChangeState(LED1, LED_ON);
-//    LED_ChangeState(LED2, LED_OFF);
-//    break;
-//
-//  case 2:
-//    LED_ChangeState(LED1, LED_OFF);
-//    LED_ChangeState(LED2, LED_ON);
-//    break;
-//
-//  }
-//
-////  println("Test string sent from STM32F4!!!"); // Print test string
-//	counter++;
+  static uint8_t counter;
+
+  switch (counter % 3) {
+
+  case 0:
+    LED_ChangeState(LED1, LED_OFF);
+    LED_ChangeState(LED2, LED_OFF);
+    break;
+
+  case 1:
+    LED_ChangeState(LED1, LED_ON);
+    LED_ChangeState(LED2, LED_OFF);
+    break;
+
+  case 2:
+    LED_ChangeState(LED1, LED_OFF);
+    LED_ChangeState(LED2, LED_ON);
+    break;
+
+  }
+
+  println("Test string sent from STM32F4!!!"); // Print test string
+	counter++;
 }

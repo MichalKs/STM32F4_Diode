@@ -67,7 +67,7 @@ void TIMER_Init(uint32_t freq) {
   SYSTICK_Init(freq); // initialize sysTick for ms count
 
   // initialize TIMER14 as microsecond counter
-  TIMER14_Init();
+//  TIMER14_Init();
 
 }
 /**
