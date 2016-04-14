@@ -60,7 +60,7 @@ int main(void) {
   LED_Init(LED5); // Add nonexising LED for test
   LED_ChangeState(LED5, LED_ON);
 
-  KEYS_Init(); // Initialize matrix keyboard
+//  KEYS_Init(); // Initialize matrix keyboard
 
   uint8_t buf[255]; // buffer for receiving commands from PC
   uint8_t len;      // length of command
@@ -81,16 +81,22 @@ int main(void) {
       println("Got frame of length %d: %s", (int)len, (char*)buf);
 
       // control LED0 from terminal
-      if (!strcmp((char*)buf, ":LED0 ON")) {
+      if (!strcmp((char*)buf, ":LED 0 ON")) {
         LED_ChangeState(LED0, LED_ON);
       }
-      if (!strcmp((char*)buf, ":LED0 OFF")) {
+      if (!strcmp((char*)buf, ":LED 0 OFF")) {
         LED_ChangeState(LED0, LED_OFF);
+      }
+      if (!strcmp((char*)buf, ":LED 1 ON")) {
+        LED_ChangeState(LED1, LED_ON);
+      }
+      if (!strcmp((char*)buf, ":LED 1 OFF")) {
+        LED_ChangeState(LED1, LED_OFF);
       }
     }
 
     TIMER_SoftTimersUpdate(); // run timers
-    KEYS_Update(); // run keyboard
+//    KEYS_Update(); // run keyboard
   }
 }
 

@@ -5,6 +5,6 @@
 </listAttribute>
 <stringAttribute key="org.eclipse.ui.externaltools.ATTR_LAUNCH_CONFIGURATION_BUILD_SCOPE" value="${none}"/>
 <stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="/usr/local/bin/openocd"/>
-<stringAttribute key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="-f board/stm32f4discovery.cfg -c &quot;program /home/mik/git/${project_name}/${project_name}/Release/${project_name}.hex verify reset&quot;"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="-f board/stm32f4discovery.cfg -c &quot;program /home/mik/git/${project_name}/${project_name}/Release/${project_name}.hex verify reset&quot; -c shutdown"/>
 <stringAttribute key="org.eclipse.ui.externaltools.ATTR_WORKING_DIRECTORY" value="/home/mik/Source/workspace_embedded"/>
 </launchConfiguration>
