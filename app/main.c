@@ -24,7 +24,7 @@
 #include "common_hal.h"
 #include "led.h"
 
-//#define DEBUG
+#define DEBUG
 
 #ifdef DEBUG
 #define print(str, args...) printf(""str"%s",##args,"")
@@ -47,7 +47,7 @@ void softTimerCallback(void) {
 //    LED_ChangeState(_LED3, LED_ON);
 //  }
   counter++;
-  COMM_Println("Hello world!");
+  println("Hello world!");
 }
 
 /**
@@ -64,10 +64,10 @@ int main(void) {
   LED_Init(_LED3); // Add an LED
 
   COMM_Init(COMM_BAUD_RATE);
-//  println("Starting program"); // Print a string to terminal
+  println("Starting program"); // Print a string to terminal
 
   // Add a soft timer with callback running every 1000ms
-  int8_t timerID = TIMER_AddSoftTimer(1000, softTimerCallback);
+  int8_t timerID = TIMER_AddSoftTimer(1, softTimerCallback);
   TIMER_StartSoftTimer(timerID); // start the timer
 
   while (1) {
