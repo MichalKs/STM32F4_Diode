@@ -41,16 +41,16 @@
  * @brief LED enum - for identifying an LED.
  */
 typedef enum {
-  LED0,//!< LED0
-  LED1,//!< LED1
-  LED2,//!< LED2
-  LED3,//!< LED3
-  LED4,//!< LED4
-  LED5,//!< LED5
-  LED6,//!< LED6
-  LED7,//!< LED7
-  LED8,//!< LED8
-  LED9,//!< LED9
+  _LED0,//!< LED0
+  _LED1,//!< LED1
+  _LED2,//!< LED2
+  _LED3,//!< LED3
+  _LED4,//!< LED4
+  _LED5,//!< LED5
+  _LED6,//!< LED6
+  _LED7,//!< LED7
+  _LED8,//!< LED8
+  _LED9,//!< LED9
 
 } LED_Number_TypeDef;
 

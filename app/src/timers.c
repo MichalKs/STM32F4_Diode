@@ -22,7 +22,6 @@
 #include <timers.h>
 #include <stdio.h>
 #include <systick.h>
-#include <timer14.h>
 
 #ifndef DEBUG
   #define DEBUG
@@ -84,28 +83,6 @@ void TIMER_Delay(uint32_t ms) {
     }
     // account for system timer overflow
     if ((currentTime < startTime) && (UINT32_MAX-startTime + currentTime > ms)) {
-      break;
-    }
-  }
-}
-
-/**
- * @brief Delay function in us.
- * @param us Microseconds to delay.
- * @warning This is a blocking function. Use with care!
- */
-void TIMER_DelayUS(uint32_t us) {
-
-  uint32_t startTime = TIMER14_GetTime();
-  uint32_t currentTime;
-
-  while (1) { // Delay
-    currentTime = TIMER14_GetTime();
-    if ((currentTime >= startTime) && (currentTime-startTime > us)) {
-      break;
-    }
-    // account for system timer overflow
-    if ((currentTime < startTime) && (UINT32_MAX-startTime + currentTime > us)) {
       break;
     }
   }

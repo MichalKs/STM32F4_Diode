@@ -30,7 +30,7 @@
 #include <led_hal.h>
 
 #ifndef DEBUG
-  #define DEBUG
+//  #define DEBUG
 #endif
 
 #ifdef DEBUG

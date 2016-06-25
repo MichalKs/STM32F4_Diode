@@ -15,8 +15,8 @@
  * @endverbatim
  */
 
-#include <led_hal.h>
-#include <stm32f4xx.h>
+#include "led_hal.h"
+#include <stm32f4xx_hal.h>
 
 /**
  * @addtogroup LED_HAL
@@ -35,18 +35,10 @@ static GPIO_TypeDef* ledPort[MAX_LEDS] = {
  * @brief LED pin numbers
  */
 static uint32_t ledPin[MAX_LEDS] = {
-    GPIO_Pin_12,
-    GPIO_Pin_13,
-    GPIO_Pin_14,
-    GPIO_Pin_15};
-/**
- * @brief LED clocks
- */
-static uint32_t ledClk[MAX_LEDS] = {
-    RCC_AHB1Periph_GPIOD,
-    RCC_AHB1Periph_GPIOD,
-    RCC_AHB1Periph_GPIOD,
-    RCC_AHB1Periph_GPIOD};
+    GPIO_PIN_12,
+    GPIO_PIN_13,
+    GPIO_PIN_14,
+    GPIO_PIN_15};
 
 /**
  * @brief Add an LED.
@@ -54,20 +46,33 @@ static uint32_t ledClk[MAX_LEDS] = {
  */
 void LED_HAL_Init(uint8_t led) {
 
-  RCC_AHB1PeriphClockCmd(ledClk[led], ENABLE);
+  if (ledPort[led] == GPIOA) {
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+  } else if (ledPort[led] == GPIOB) {
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+  } else if (ledPort[led] == GPIOC) {
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+  } else if (ledPort[led] == GPIOD) {
+    __HAL_RCC_GPIOD_CLK_ENABLE();
+  } else if (ledPort[led] == GPIOE) {
+    __HAL_RCC_GPIOE_CLK_ENABLE();
+  } else if (ledPort[led] == GPIOF) {
+    __HAL_RCC_GPIOF_CLK_ENABLE();
+  } else if (ledPort[led] == GPIOG) {
+    __HAL_RCC_GPIOG_CLK_ENABLE();
+  }
 
-  GPIO_InitTypeDef GPIO_InitStructure;
+  GPIO_InitTypeDef GPIO_InitStruct;
 
-  // Configure pin in output push/pull mode
-  GPIO_InitStructure.GPIO_Pin   = ledPin[led];
-  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;    // output pin
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;    // push-pull output
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;  // less interference
-  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL; // no pull-up
+  GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull  = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 
-  GPIO_Init(ledPort[led], &GPIO_InitStructure);
+  GPIO_InitStruct.Pin = ledPin[led];
 
-  GPIO_WriteBit(ledPort[led], ledPin[led], Bit_RESET); // turn LED off
+  HAL_GPIO_Init(ledPort[led], &GPIO_InitStruct);
+
+  HAL_GPIO_WritePin(ledPort[led], ledPin[led], GPIO_PIN_RESET); // turn LED off
 
 }
 
@@ -88,9 +93,9 @@ void LED_HAL_Toggle(uint8_t led) {
 void LED_HAL_ChangeState(uint8_t led, uint8_t state) {
 
   if (state == 1) {
-    ledPort[led]->BSRRL = ledPin[led]; // set bit
+    ledPort[led]->BSRR = ledPin[led]; // set bit
   } else {
-    ledPort[led]->BSRRH = ledPin[led]; // reset bit
+    ledPort[led]->BSRR = (ledPin[led]<<16); // reset bit
   }
 
 }

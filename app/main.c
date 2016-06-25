@@ -16,25 +16,27 @@
  * @endverbatim
  */
 
-//#include <stdio.h>
-//#include <string.h>
+#include <stdio.h>
+#include <string.h>
 #include "timers.h"
-//#include <led.h>
-//#include <comm.h>
+#include <comm.h>
 //#include <keys.h>
-
-#include "stm32f4xx_hal.h"
-#include "stm32f4_discovery.h"
 #include "common_hal.h"
+#include "led.h"
 
-//#define SYSTICK_FREQ 1000 ///< Frequency of the SysTick set at 1kHz.
-//#define COMM_BAUD_RATE 115200UL ///< Baud rate for communication with PC
+#define COMM_BAUD_RATE 115200UL ///< Baud rate for communication with PC
 
 void softTimerCallback(void) {
-  BSP_LED_Toggle(LED3);
-  BSP_LED_Toggle(LED4);
-  BSP_LED_Toggle(LED5);
-  BSP_LED_Toggle(LED6);
+  static int counter;
+  LED_Toggle(_LED0);
+  LED_Toggle(_LED1);
+  LED_Toggle(_LED2);
+  if (counter % 2) {
+    LED_ChangeState(_LED3, LED_OFF);
+  } else {
+    LED_ChangeState(_LED3, LED_ON);
+  }
+  counter++;
 }
 
 //#define DEBUG
@@ -56,10 +58,10 @@ int main(void) {
 
   COMMON_HAL_Init();
 
-  BSP_LED_Init(LED3);
-  BSP_LED_Init(LED4);
-  BSP_LED_Init(LED5);
-  BSP_LED_Init(LED6);
+  LED_Init(_LED0); // Add an LED
+  LED_Init(_LED1); // Add an LED
+  LED_Init(_LED2); // Add an LED
+  LED_Init(_LED3); // Add an LED
 
   // Add a soft timer with callback running every 1000ms
   int8_t timerID = TIMER_AddSoftTimer(1000, softTimerCallback);
@@ -80,18 +82,7 @@ int main(void) {
 //  COMM_Init(COMM_BAUD_RATE); // initialize communication with PC
 //  println("Starting program"); // Print a string to terminal
 //
-//  TIMER_Init(SYSTICK_FREQ); // Initialize timer
-//
-//  // Add a soft timer with callback running every 1000ms
-//  int8_t timerID = TIMER_AddSoftTimer(1000, softTimerCallback);
-//  TIMER_StartSoftTimer(timerID); // start the timer
-//
-//  LED_Init(LED0); // Add an LED
-//  LED_Init(LED1); // Add an LED
-//  LED_Init(LED2); // Add an LED
-//  LED_Init(LED3); // Add an LED
 //  LED_Init(LED5); // Add nonexising LED for test
-//  LED_ChangeState(LED5, LED_ON);
 //
 ////  KEYS_Init(); // Initialize matrix keyboard
 //
@@ -128,37 +119,7 @@ int main(void) {
 //      }
 //    }
 //
-//    TIMER_SoftTimersUpdate(); // run timers
 ////    KEYS_Update(); // run keyboard
 //  }
 //}
 
-///**
-// * @brief Callback function called on every soft timer overflow
-// */
-//void softTimerCallback(void) {
-//
-//  static uint8_t counter;
-//
-//  switch (counter % 3) {
-//
-//  case 0:
-//    LED_ChangeState(LED1, LED_OFF);
-//    LED_ChangeState(LED2, LED_OFF);
-//    break;
-//
-//  case 1:
-//    LED_ChangeState(LED1, LED_ON);
-//    LED_ChangeState(LED2, LED_OFF);
-//    break;
-//
-//  case 2:
-//    LED_ChangeState(LED1, LED_OFF);
-//    LED_ChangeState(LED2, LED_ON);
-//    break;
-//
-//  }
-//
-//  println("Test string sent from STM32F4!!!"); // Print test string
-//  counter++;
-//}
