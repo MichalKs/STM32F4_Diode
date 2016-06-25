@@ -18,10 +18,9 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "timers.h"
-#include <comm.h>
-//#include <keys.h>
 #include "common_hal.h"
+#include "timers.h"
+#include "comm.h"
 #include "led.h"
 
 #define DEBUG
@@ -36,17 +35,11 @@
 
 #define COMM_BAUD_RATE 115200UL ///< Baud rate for communication with PC
 
+/**
+ * @brief Callback for performing periodic tasks
+ */
 void softTimerCallback(void) {
-  static int counter;
-  LED_Toggle(_LED0);
-  LED_Toggle(_LED1);
   LED_Toggle(_LED2);
-//  if (counter % 2) {
-//    LED_ChangeState(_LED3, LED_OFF);
-//  } else {
-//    LED_ChangeState(_LED3, LED_ON);
-//  }
-  counter++;
   println("Hello world!");
 }
 
@@ -58,39 +51,51 @@ void softTimerCallback(void) {
 int main(void) {
 
   COMMON_HAL_Init();
-  LED_Init(_LED0); // Add an LED
-  LED_Init(_LED1); // Add an LED
-  LED_Init(_LED2); // Add an LED
-  LED_Init(_LED3); // Add an LED
 
   COMM_Init(COMM_BAUD_RATE);
   println("Starting program"); // Print a string to terminal
 
+  LED_Init(_LED0); // Add an LED
+  LED_Init(_LED1); // Add an LED
+  LED_Init(_LED2); // Add an LED
+  LED_Init(_LED3); // Add an LED
+  LED_Init(_LED5); // Add nonexising LED for test
+
   // Add a soft timer with callback running every 1000ms
-  int8_t timerID = TIMER_AddSoftTimer(1, softTimerCallback);
+  int8_t timerID = TIMER_AddSoftTimer(100, softTimerCallback);
   TIMER_StartSoftTimer(timerID); // start the timer
 
+  uint8_t buf[64]; // buffer for receiving commands from PC
+  uint8_t len;      // length of command
   while (1) {
+    // check for new frames from PC
+    if (!COMM_GetFrame(buf, &len)) {
+      println("Got frame of length %d: %s", (int)len, (char*)buf);
+
+      // control LED0 from terminal
+      if (!strcmp((char*)buf, ":LED 0 ON")) {
+        LED_ChangeState(_LED0, LED_ON);
+      }
+      if (!strcmp((char*)buf, ":LED 0 OFF")) {
+        LED_ChangeState(_LED0, LED_OFF);
+      }
+      if (!strcmp((char*)buf, ":LED 1 ON")) {
+        LED_ChangeState(_LED1, LED_ON);
+      }
+      if (!strcmp((char*)buf, ":LED 1 OFF")) {
+        LED_ChangeState(_LED1, LED_OFF);
+      }
+    }
+
     TIMER_SoftTimersUpdate();
   }
 }
 
 
-///**
-// * @brief Main
-// * @return None
-// */
 //int main(void) {
 
-//  COMM_Init(COMM_BAUD_RATE); // initialize communication with PC
-//  println("Starting program"); // Print a string to terminal
-//
-//  LED_Init(LED5); // Add nonexising LED for test
-//
 ////  KEYS_Init(); // Initialize matrix keyboard
 //
-//  uint8_t buf[255]; // buffer for receiving commands from PC
-//  uint8_t len;      // length of command
 //
 //  // test another way of measuring time delays
 //  uint32_t softTimer = TIMER_GetTime(); // get start time for delay
@@ -103,24 +108,7 @@ int main(void) {
 //      softTimer = TIMER_GetTime(); // get start time for delay
 //    }
 //
-//    // check for new frames from PC
-//    if (!COMM_GetFrame(buf, &len)) {
-//      println("Got frame of length %d: %s", (int)len, (char*)buf);
-//
-//      // control LED0 from terminal
-//      if (!strcmp((char*)buf, ":LED 0 ON")) {
-//        LED_ChangeState(LED0, LED_ON);
-//      }
-//      if (!strcmp((char*)buf, ":LED 0 OFF")) {
-//        LED_ChangeState(LED0, LED_OFF);
-//      }
-//      if (!strcmp((char*)buf, ":LED 1 ON")) {
-//        LED_ChangeState(LED1, LED_ON);
-//      }
-//      if (!strcmp((char*)buf, ":LED 1 OFF")) {
-//        LED_ChangeState(LED1, LED_OFF);
-//      }
-//    }
+
 //
 ////    KEYS_Update(); // run keyboard
 //  }
