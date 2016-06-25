@@ -18,7 +18,8 @@
 #include <comm.h>
 #include <fifo.h>
 #include <stdio.h>
-#include <uart6.h>
+#include <uart.h>
+#include <string.h>
 
 #ifndef DEBUG
   #define DEBUG
@@ -94,6 +95,14 @@ void COMM_Putc(char c) {
 
   // enable IRQ again
   COMM_HAL_IrqEnable();
+}
+
+void COMM_Println(char* str) {
+  for (int i = 0; i < strlen(str); i++) {
+    COMM_Putc(str[i]);
+  }
+  COMM_Putc('\r');
+  COMM_Putc('\n');
 }
 
 /**

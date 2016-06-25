@@ -15,7 +15,7 @@
  * @endverbatim
  */
 
-#include "uart6.h"
+#include <uart.h>
 #include "common_hal.h"
 
 /**
@@ -27,7 +27,7 @@ static void  (*rxCallback)(char);  ///< Callback function for receiving data
 static int   (*txCallback)(char*); ///< Callback function for transmitting data (fills up buffer with data to send)
 static UART_HandleTypeDef uartHandle; ///< Handle for UART peripheral
 
-static char rxBuffer[1];  ///< Reception buffer - we receive one character at a time
+static char rxBuffer[32];  ///< Reception buffer - we receive one character at a time
 
 static volatile int isSendingData; ///< Flag saying if UART is currently sending any data
 
@@ -38,7 +38,7 @@ static volatile int isSendingData; ///< Flag saying if UART is currently sending
  * @retval 1 UART is sending data
  * @retval 0 UART is not sending data
  */
-int UART6_IsSendingData(void) {
+int UART_IsSendingData(void) {
   return isSendingData;
 }
 
@@ -48,10 +48,10 @@ int UART6_IsSendingData(void) {
  * However if the IRQ is not running this function has to be called manually to
  * enable the IRQ.
  */
-void UART6_SendData(void) {
+void UART_SendData(void) {
 
   // has to be static to serve as a buffer for UART
-  static uint8_t buf[UART_BUF_LEN_TX];
+  static char buf[UART_BUF_LEN_TX];
 
   // if no function set do nothing
   if (txCallback == NULL) {
@@ -64,7 +64,7 @@ void UART6_SendData(void) {
   // if there is any data in the FIFO
   if (ret != 0) {
     // send it to PC
-    HAL_UART_Transmit_IT(&uartHandle, buf, ret);
+    HAL_UART_Transmit_IT(&uartHandle, (uint8_t*)buf, ret);
     isSendingData = 1;
   } else {
     isSendingData = 0;
@@ -78,7 +78,7 @@ void UART6_SendData(void) {
  * @param rxCb
  * @param txCb
  */
-void UART6_Init(int baud, void(*rxCb)(char), int(*txCb)(char*) ) {
+void UART_Init(int baud, void(*rxCb)(char), int(*txCb)(char*) ) {
 
   txCallback = txCb;
   rxCallback = rxCb;
@@ -139,23 +139,16 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
  * @param huart UART handle
  */
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
-  UART6_SendData();
+  UART_SendData();
 }
 
 void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
   GPIO_InitTypeDef  GPIO_InitStruct;
 
-  RCC_PeriphCLKInitTypeDef RCC_PeriphClkInit;
-
   /*##-1- Enable peripherals and GPIO Clocks #################################*/
   /* Enable GPIO TX/RX clock */
   USARTx_TX_GPIO_CLK_ENABLE();
   USARTx_RX_GPIO_CLK_ENABLE();
-
-  /* Select SysClk as source of USART1 clocks */
-//  RCC_PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART6;
-//  RCC_PeriphClkInit.Usart6ClockSelection = RCC_USART6CLKSOURCE_SYSCLK;
-//  HAL_RCCEx_PeriphCLKConfig(&RCC_PeriphClkInit);
 
   /* Enable USARTx clock */
   USARTx_CLK_ENABLE();
@@ -165,7 +158,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
   GPIO_InitStruct.Pin       = USARTx_TX_PIN;
   GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull      = GPIO_PULLUP;
-  GPIO_InitStruct.Speed     = GPIO_SPEED_HIGH;
+  GPIO_InitStruct.Speed     = GPIO_SPEED_FAST;
   GPIO_InitStruct.Alternate = USARTx_TX_AF;
 
   HAL_GPIO_Init(USARTx_TX_GPIO_PORT, &GPIO_InitStruct);

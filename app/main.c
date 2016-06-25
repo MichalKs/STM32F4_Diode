@@ -24,21 +24,6 @@
 #include "common_hal.h"
 #include "led.h"
 
-#define COMM_BAUD_RATE 115200UL ///< Baud rate for communication with PC
-
-void softTimerCallback(void) {
-  static int counter;
-  LED_Toggle(_LED0);
-  LED_Toggle(_LED1);
-  LED_Toggle(_LED2);
-  if (counter % 2) {
-    LED_ChangeState(_LED3, LED_OFF);
-  } else {
-    LED_ChangeState(_LED3, LED_ON);
-  }
-  counter++;
-}
-
 //#define DEBUG
 
 #ifdef DEBUG
@@ -49,6 +34,22 @@ void softTimerCallback(void) {
 #define println(str, args...) (void)0
 #endif
 
+#define COMM_BAUD_RATE 115200UL ///< Baud rate for communication with PC
+
+void softTimerCallback(void) {
+  static int counter;
+  LED_Toggle(_LED0);
+  LED_Toggle(_LED1);
+  LED_Toggle(_LED2);
+//  if (counter % 2) {
+//    LED_ChangeState(_LED3, LED_OFF);
+//  } else {
+//    LED_ChangeState(_LED3, LED_ON);
+//  }
+  counter++;
+  COMM_Println("Hello world!");
+}
+
 /**
   * @brief  Main program
   * @param  None
@@ -57,11 +58,13 @@ void softTimerCallback(void) {
 int main(void) {
 
   COMMON_HAL_Init();
-
   LED_Init(_LED0); // Add an LED
   LED_Init(_LED1); // Add an LED
   LED_Init(_LED2); // Add an LED
   LED_Init(_LED3); // Add an LED
+
+  COMM_Init(COMM_BAUD_RATE);
+//  println("Starting program"); // Print a string to terminal
 
   // Add a soft timer with callback running every 1000ms
   int8_t timerID = TIMER_AddSoftTimer(1000, softTimerCallback);

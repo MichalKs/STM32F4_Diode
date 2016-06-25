@@ -18,6 +18,7 @@
 
 #include "common_hal.h"
 #include <stm32f4xx_hal.h>
+#include "led.h"
 
 static void SystemClock_Config(void);
 
@@ -104,7 +105,7 @@ void SystemClock_Config(void) {
  * @brief Error handler for HAL
  */
 void Error_Handler(void) {
-
+  LED_ChangeState(_LED3, LED_ON);
   while(1) {
 
   }
@@ -115,12 +116,14 @@ void Error_Handler(void) {
   * @brief   This function handles NMI exception.
   */
 void NMI_Handler(void) {
+
 }
 
 /**
   * @brief  This function handles Hard Fault exception.
   */
 void HardFault_Handler(void) {
+  LED_ChangeState(_LED3, LED_ON);
   /* Go to infinite loop when Hard Fault exception occurs */
   while (1) {
   }
@@ -130,6 +133,7 @@ void HardFault_Handler(void) {
   * @brief  This function handles Memory Manage exception.
   */
 void MemManage_Handler(void) {
+  LED_ChangeState(_LED3, LED_ON);
   /* Go to infinite loop when Memory Manage exception occurs */
   while (1) {
   }
@@ -139,6 +143,7 @@ void MemManage_Handler(void) {
   * @brief  This function handles Bus Fault exception.
   */
 void BusFault_Handler(void) {
+  LED_ChangeState(_LED3, LED_ON);
   /* Go to infinite loop when Bus Fault exception occurs */
   while (1) {
   }
@@ -150,6 +155,7 @@ void BusFault_Handler(void) {
   * @retval None
   */
 void UsageFault_Handler(void) {
+  LED_ChangeState(_LED3, LED_ON);
   /* Go to infinite loop when Usage Fault exception occurs */
   while (1) {
   }

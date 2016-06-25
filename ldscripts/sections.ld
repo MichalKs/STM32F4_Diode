@@ -9,34 +9,13 @@ __stack = ORIGIN(RAM) + LENGTH(RAM);
 
 _estack = __stack; 	/* STM specific definition */
 
-/*
- * Default stack sizes.
- * These are used by the startup in order to allocate stacks 
- * for the different modes.
- */
-
-__Main_Stack_Size = 1024 ;
-
-PROVIDE ( _Main_Stack_Size = __Main_Stack_Size ) ;
-
-__Main_Stack_Limit = __stack  - __Main_Stack_Size ;
-
-/*"PROVIDE" allows to easily override these values from an object file or the command line. */
-PROVIDE ( _Main_Stack_Limit = __Main_Stack_Limit ) ;
 
 /*
  * There will be a link error if there is not this amount of 
  * RAM free at the end. 
  */
-_Minimum_Stack_Size = 256 ;
+_Minimum_Stack_Size = 1024 ;
 
-/*
- * Default heap definitions.
- * The heap start immediately after the last statically allocated 
- * .sbss/.noinit section, and extends up to the main stack limit.
- */
-PROVIDE ( _Heap_Begin = _end_noinit ) ;
-PROVIDE ( _Heap_Limit = __stack - _Main_Stack_Size ) ;
 
 /* 
  * The entry point is informative, for debuggers and simulators,
@@ -189,12 +168,6 @@ SECTIONS
      * initialise the .data section.
      */
     _sidata = _etext;
-    
-    /* MEMORY_ARRAY */
-    .ROarraySection :
-    {
-     	*(.ROarraySection .ROarraySection.*)                          
-    } >MEMORY_ARRAY
      
 
     /*
@@ -280,67 +253,11 @@ SECTIONS
 	    . = ALIGN(4);
     } >RAM
     
-	.bss_CCMRAM : ALIGN(4)
-	{
-		*(.bss.CCMRAM .bss.CCMRAM.*)
-	} > CCMRAM
-   
-    /*
-     * The FLASH Bank1.
-     * The C or assembly source must explicitly place the code 
-     * or data there using the "section" attribute.
-     */
-    .b1text :
-    {
-        *(.b1text)                   /* remaining code */
-        *(.b1rodata)                 /* read-only data (constants) */
-        *(.b1rodata.*)
-    } >FLASHB1
-    
-    /*
-     * The EXTMEM.
-     * The C or assembly source must explicitly place the code or data there
-     * using the "section" attribute.
-     */
-
-    /* EXTMEM Bank0 */
-    .eb0text :
-    {
-        *(.eb0text)                   /* remaining code */
-        *(.eb0rodata)                 /* read-only data (constants) */
-        *(.eb0rodata.*)
-    } >EXTMEMB0
-    
-    /* EXTMEM Bank1 */
-    .eb1text :
-    {
-        *(.eb1text)                   /* remaining code */
-        *(.eb1rodata)                 /* read-only data (constants) */
-        *(.eb1rodata.*)
-    } >EXTMEMB1
-    
-    /* EXTMEM Bank2 */
-    .eb2text :
-    {
-        *(.eb2text)                   /* remaining code */
-        *(.eb2rodata)                 /* read-only data (constants) */
-        *(.eb2rodata.*)
-    } >EXTMEMB2
-    
-    /* EXTMEM Bank0 */
-    .eb3text :
-    {
-        *(.eb3text)                   /* remaining code */
-        *(.eb3rodata)                 /* read-only data (constants) */
-        *(.eb3rodata.*)
-    } >EXTMEMB3
-   
-
-    
     /* After that there are only debugging sections. */
     
     /* This removes the debugging information from the standard libraries */    
     /*
+    
     DISCARD :
     {
      libc.a ( * )

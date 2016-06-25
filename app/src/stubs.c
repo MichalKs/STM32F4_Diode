@@ -80,7 +80,7 @@ int _write(int fileHandle, char *buf, int len) {
 
   int i;
   for (i=0; i<len; i++) {
-//    COMM_Putc((uint8_t)buf[i]);
+    COMM_Putc(buf[i]);
   }
 
   return len;
