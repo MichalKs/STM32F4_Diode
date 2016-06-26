@@ -27,7 +27,7 @@ static void  (*rxCallback)(char);  ///< Callback function for receiving data
 static int   (*txCallback)(char*); ///< Callback function for transmitting data (fills up buffer with data to send)
 static UART_HandleTypeDef uartHandle; ///< Handle for UART peripheral
 
-static char rxBuffer[32];  ///< Reception buffer - we receive one character at a time
+static char rxBuffer[1];  ///< Reception buffer - we receive one character at a time
 
 static volatile int isSendingData; ///< Flag saying if UART is currently sending any data
 
@@ -73,24 +73,16 @@ void UART_SendData(void) {
 }
 
 /**
- * @brief Initialize USART2
- * @param baud
- * @param rxCb
- * @param txCb
+ * @brief Initialize UART
+ * @param baud Baud rate
+ * @param rxCb Receive callback
+ * @param txCb Transmit callbacl
  */
 void UART_Init(int baud, void(*rxCb)(char), int(*txCb)(char*) ) {
 
   txCallback = txCb;
   rxCallback = rxCb;
 
-  /*##-1- Configure the UART peripheral ######################################*/
-  /* Put the USART peripheral in the Asynchronous mode (UART Mode) */
-  /* UART configured as follows:
-      - Word Length = 8 Bits (7 data bit + 1 parity bit) : BE CAREFUL : Program 7 data bits + 1 parity bit in PC HyperTerminal
-      - Stop Bit    = One Stop bit
-      - Parity      = ODD parity
-      - BaudRate    = 9600 baud
-      - Hardware flow control disabled (RTS and CTS signals) */
   uartHandle.Instance        = USARTx;
 
   uartHandle.Init.BaudRate   = baud;
@@ -102,15 +94,13 @@ void UART_Init(int baud, void(*rxCb)(char), int(*txCb)(char*) ) {
 
   if (HAL_UART_Init(&uartHandle) != HAL_OK) {
     /* Initialization Error */
-    Error_Handler();
+    COMMON_HAL_ErrorHandler();
   }
 
   /*##-2- Put UART peripheral in IT reception process ########################*/
-  /* Any data received will be stored in "UserTxBuffer" buffer  */
-  if(HAL_UART_Receive_IT(&uartHandle, (uint8_t*)rxBuffer, 1) != HAL_OK)
-  {
+  if(HAL_UART_Receive_IT(&uartHandle, (uint8_t*)rxBuffer, 1) != HAL_OK) {
     /* Transfer error in reception process */
-    Error_Handler();
+    COMMON_HAL_ErrorHandler();
   }
 
 }
@@ -133,7 +123,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
   // start another reception
   HAL_UART_Receive_IT(huart, (uint8_t *)(rxBuffer), 1);
 }
-
 /**
  * @brief Transfer completed callback (called whenever IRQ sends the whole buffer)
  * @param huart UART handle
@@ -141,7 +130,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
   UART_SendData();
 }
-
+/**
+ * Initialize low level UART
+ * @param huart UART handle pointer
+ */
 void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
   GPIO_InitTypeDef  GPIO_InitStruct;
 
@@ -174,14 +166,12 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
   HAL_NVIC_EnableIRQ(USARTx_IRQn);
 
 }
-
 /**
   * @brief UART MSP De-Initialization
   *        This function frees the hardware resources used in this example:
   *          - Disable the Peripheral's clock
   *          - Revert GPIO and NVIC configuration to their default state
   * @param huart: UART handle pointer
-  * @retval None
   */
 void HAL_UART_MspDeInit(UART_HandleTypeDef *huart) {
   /*##-1- Reset peripherals ##################################################*/
@@ -196,7 +186,6 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *huart) {
 
   HAL_NVIC_DisableIRQ(USARTx_IRQn);
 }
-
 /**
  * @brief  This function handles UART interrupt request.
  */

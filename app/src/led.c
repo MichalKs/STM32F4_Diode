@@ -29,11 +29,7 @@
 #include <led.h>
 #include <led_hal.h>
 
-#ifndef DEBUG
-//  #define DEBUG
-#endif
-
-#ifdef DEBUG
+#ifdef DEBUG_LED
   #define print(str, args...) printf("LED--> "str"%s",##args,"\r")
   #define println(str, args...) printf("LED--> "str"%s",##args,"\r\n")
 #else

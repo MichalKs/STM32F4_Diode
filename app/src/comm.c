@@ -21,11 +21,11 @@
 #include <uart.h>
 #include <string.h>
 
-#ifndef DEBUG
-  #define DEBUG
+#ifndef COMM_DEBUG
+  #define COMM_DEBUG
 #endif
 
-#ifdef DEBUG
+#ifdef COMM_DEBUG
   #define print(str, args...) printf("COMM--> "str"%s",##args,"\r")
   #define println(str, args...) printf("COMM--> "str"%s",##args,"\r\n")
 #else
@@ -39,7 +39,7 @@
  */
 
 #define COMM_BUF_LEN_TX UART_BUF_LEN_TX    ///< COMM buffer lengths
-#define COMM_BUF_LEN_RX 64     ///< COMM buffer lengths
+#define COMM_BUF_LEN_RX 32     ///< COMM buffer lengths
 #define COMM_TERMINATOR '\r'   ///< COMM frame terminator character
 
 static uint8_t rxBuffer[COMM_BUF_LEN_RX]; ///< Buffer for received data.
@@ -86,7 +86,7 @@ void COMM_Putc(char c) {
   // disable IRQ so it doesn't screw up FIFO count - leads to errors in transmission
   COMM_HAL_IrqDisable();
 
-  FIFO_Push(&txFifo,c); // Put data in TX buffer
+  FIFO_Push(&txFifo,(uint8_t)c); // Put data in TX buffer
 
   // enable transmitter if inactive
   if (!COMM_HAL_IsTxActive()) {
@@ -96,7 +96,10 @@ void COMM_Putc(char c) {
   // enable IRQ again
   COMM_HAL_IrqEnable();
 }
-
+/**
+ * @brief Send string to PC
+ * @param str C-string to send
+ */
 void COMM_Println(char* str) {
   for (int i = 0; i < strlen(str); i++) {
     COMM_Putc(str[i]);
@@ -104,9 +107,8 @@ void COMM_Println(char* str) {
   COMM_Putc('\r');
   COMM_Putc('\n');
 }
-
 /**
- * @brief Get a char from USART2
+ * @brief Get a char from PC
  * @return Received char.
  * @warning Blocking function! Waits until char is received.
  */
@@ -119,11 +121,10 @@ char COMM_Getc(void) {
 
   FIFO_Pop(&rxFifo,&c); // Get data from RX buffer
 
-  return c;
+  return (char)c;
 }
-
 /**
- * @brief Get a complete frame from USART2 (nonblocking)
+ * @brief Get a complete frame from PC(nonblocking)
  * @param buf Buffer for data (data will be null terminated for easier string manipulation)
  * @param len Length not including terminator character
  * @retval 0 Received frame
@@ -178,7 +179,6 @@ void COMM_RxCallback(char c) {
     gotFrame++;
   }
 }
-
 /**
  * @brief Callback for transmitting data to lower layer
  * @param c Transmitted data
@@ -187,13 +187,15 @@ void COMM_RxCallback(char c) {
  */
 int COMM_TxCallback(char* buf) {
 
+  uint8_t* localBuff = (uint8_t*)buf;
+
   if (FIFO_IsEmpty(&txFifo)) {
     return 0;
   }
 
   // get all the data at one go
   int i = 0;
-  while (!FIFO_Pop(&txFifo, buf+i)) {
+  while (!FIFO_Pop(&txFifo, localBuff+i)) {
     i++;
   }
 

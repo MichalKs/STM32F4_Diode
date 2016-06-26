@@ -18,11 +18,11 @@
 #include <fifo.h>
 #include <stdio.h>
 
-#ifndef DEBUG
-  #define DEBUG
+#ifndef DEBUG_FIFO
+  #define DEBUG_FIFO
 #endif
 
-#ifdef DEBUG
+#ifdef DEBUG_FIFO
   #define print(str, args...) printf("FIFO--> "str"%s",##args,"\r")
   #define println(str, args...) printf("FIFO--> "str"%s",##args,"\r\n")
 #else

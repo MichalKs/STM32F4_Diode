@@ -23,11 +23,11 @@
 #include <stdio.h>
 #include <systick.h>
 
-#ifndef DEBUG
-  #define DEBUG
+#ifndef DEBUG_TIMERS
+  #define DEBUG_TIMERS
 #endif
 
-#ifdef DEBUG
+#ifdef DEBUG_TIMERS
   #define print(str, args...) printf("LED--> "str"%s",##args,"\r")
   #define println(str, args...) printf("LED--> "str"%s",##args,"\r\n")
 #else
@@ -57,7 +57,6 @@ typedef struct {
 
 static TIMER_Soft_TypeDef softTimers[MAX_SOFT_TIMERS]; ///< Array of soft timers
 
-
 /**
  * @brief Returns the system time.
  * @return System time
@@ -65,7 +64,6 @@ static TIMER_Soft_TypeDef softTimers[MAX_SOFT_TIMERS]; ///< Array of soft timers
 uint32_t TIMER_GetTime(void) {
   return SYSTICK_GetTime();
 }
-
 /**
  * @brief Delay function.
  * @param ms Milliseconds to delay.
@@ -87,7 +85,6 @@ void TIMER_Delay(uint32_t ms) {
     }
   }
 }
-
 /**
  * @brief Nonblocking delay function using
  * @param ms Delay time
@@ -109,9 +106,7 @@ uint8_t TIMER_DelayTimer(uint32_t ms, uint32_t startTime) {
   } else {
     return 0;
   }
-
 }
-
 /**
  * @brief Adds a soft timer
  * @param maxVal Overflow value of timer
@@ -136,7 +131,6 @@ int8_t TIMER_AddSoftTimer(uint32_t maxVal, void (*fun)(void)) {
 
   return (softTimerCount - 1);
 }
-
 /**
  * @brief Starts the timer (zeroes out current count value).
  * @param id Timer ID

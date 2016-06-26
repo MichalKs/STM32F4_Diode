@@ -45,8 +45,6 @@ void softTimerCallback(void) {
 
 /**
   * @brief  Main program
-  * @param  None
-  * @retval None
   */
 int main(void) {
 
@@ -58,11 +56,9 @@ int main(void) {
   LED_Init(_LED0); // Add an LED
   LED_Init(_LED1); // Add an LED
   LED_Init(_LED2); // Add an LED
-  LED_Init(_LED3); // Add an LED
-  LED_Init(_LED5); // Add nonexising LED for test
 
   // Add a soft timer with callback running every 1000ms
-  int8_t timerID = TIMER_AddSoftTimer(100, softTimerCallback);
+  int8_t timerID = TIMER_AddSoftTimer(500, softTimerCallback);
   TIMER_StartSoftTimer(timerID); // start the timer
 
   uint8_t buf[64]; // buffer for receiving commands from PC

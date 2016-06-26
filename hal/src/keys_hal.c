@@ -4,6 +4,8 @@
  * @date    6 paź 2014
  * @author  Michal Ksiezopolski
  * 
+ * FIXME This module in not finished nor tested with HAL
+ *
  * @verbatim
  * Copyright (c) 2014 Michal Ksiezopolski.
  * All rights reserved. This program and the 
@@ -35,10 +37,10 @@
 #define KEYS_COL3_PIN GPIO_PIN_10
 
 #define KEYS_ROW_PORT   GPIOE
-#define KEYS_ROW_CLOCK  RCC_AHB1Periph_GPIOE
+#define KEYS_ROW_CLOCK_ENABLE()  __HAL_RCC_GPIOE_CLK_ENABLE()
 
 #define KEYS_COL_PORT   GPIOE
-#define KEYS_COL_CLOCK  RCC_AHB1Periph_GPIOE
+#define KEYS_COL_CLOCK_ENABLE()  __HAL_RCC_GPIOE_CLK_ENABLE()
 
 /**
  * @brief Initialize 4x4 matrix keyboard
@@ -46,30 +48,29 @@
 void KEYS_HAL_Init(void) {
 
   // Enable clocks
-  RCC_AHB1PeriphClockCmd(KEYS_ROW_CLOCK, ENABLE);
-  RCC_AHB1PeriphClockCmd(KEYS_COL_CLOCK, ENABLE);
+  KEYS_ROW_CLOCK_ENABLE();
+  KEYS_COL_CLOCK_ENABLE();
 
-  GPIO_InitTypeDef GPIO_InitStructure;
+  GPIO_InitTypeDef GPIO_InitStruct;
 
-  // Configure row pins in input pulled-up mode
-  GPIO_InitStructure.GPIO_Pin   = KEYS_ROW0_PIN | KEYS_ROW1_PIN |
+  GPIO_InitStruct.Mode  = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull  = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+
+  GPIO_InitStruct.Pin = KEYS_ROW0_PIN | KEYS_ROW1_PIN |
       KEYS_ROW2_PIN | KEYS_ROW3_PIN;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP; // irrelevant
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz; // irrelevant
-  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_IN;
-  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
 
-  GPIO_Init(KEYS_ROW_PORT, &GPIO_InitStructure);
+  HAL_GPIO_Init(KEYS_ROW_PORT, &GPIO_InitStruct);
 
   // Configure column pins in output push/pull mode
-  GPIO_InitStructure.GPIO_Pin   = KEYS_COL0_PIN | KEYS_COL1_PIN |
-      KEYS_COL2_PIN | KEYS_COL3_PIN;
-  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz; // less interference
-  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+  GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull  = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 
-  GPIO_Init(KEYS_COL_PORT, &GPIO_InitStructure);
+  GPIO_InitStruct.Pin = KEYS_COL0_PIN | KEYS_COL1_PIN |
+      KEYS_COL2_PIN | KEYS_COL3_PIN;
+
+  HAL_GPIO_Init(KEYS_COL_PORT, &GPIO_InitStruct);
 
 }
 /**
@@ -79,22 +80,22 @@ void KEYS_HAL_Init(void) {
 void KEYS_HAL_SelectColumn(uint8_t col) {
 
   // set all columns high
-  GPIO_SetBits(KEYS_COL_PORT, KEYS_COL0_PIN | KEYS_COL1_PIN |
-      KEYS_COL2_PIN | KEYS_COL3_PIN);
+  HAL_GPIO_WritePin(KEYS_COL_PORT, KEYS_COL0_PIN | KEYS_COL1_PIN |
+      KEYS_COL2_PIN | KEYS_COL3_PIN, GPIO_PIN_SET);
 
   // set selected column as low
   switch (col) {
   case 0:
-    GPIO_ResetBits(KEYS_COL_PORT, KEYS_COL0_PIN);
+    HAL_GPIO_WritePin(KEYS_COL_PORT, KEYS_COL0_PIN, GPIO_PIN_RESET);
     break;
   case 1:
-    GPIO_ResetBits(KEYS_COL_PORT, KEYS_COL1_PIN);
+    HAL_GPIO_WritePin(KEYS_COL_PORT, KEYS_COL1_PIN, GPIO_PIN_RESET);
     break;
   case 2:
-    GPIO_ResetBits(KEYS_COL_PORT, KEYS_COL2_PIN);
+    HAL_GPIO_WritePin(KEYS_COL_PORT, KEYS_COL2_PIN, GPIO_PIN_RESET);
     break;
   case 3:
-    GPIO_ResetBits(KEYS_COL_PORT, KEYS_COL3_PIN);
+    HAL_GPIO_WritePin(KEYS_COL_PORT, KEYS_COL3_PIN, GPIO_PIN_RESET);
     break;
   default:
     break;

@@ -30,11 +30,11 @@
  * @{
  */
 
-void hexdump(const uint8_t* buf, uint32_t length);
-void hexdumpC(const uint8_t const *buf, uint32_t length);
-void hexdump16C(const uint16_t const *buf, uint32_t length);
-uint32_t ntohl(uint32_t val);
-uint8_t isBigEndian(void);
+void      UTILS_Hexdump     (const uint8_t* buf, uint32_t length);
+void      UTILS_HexdumpC    (const uint8_t const *buf, uint32_t length);
+void      UTILS_Hexdump16C  (const uint16_t const *buf, uint32_t length);
+uint32_t  UTILS_Ntohl       (uint32_t val);
+uint8_t   UTILS_IsBigEndian (void);
 
 /**
  * @}
